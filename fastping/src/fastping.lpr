@@ -11,7 +11,8 @@ uses
   Laz_Synapse,
   LazFileUtils,
   SysTools,
-  Version;
+  Version,
+  InetUtil;
 
 const
   ERR_SUCCESS = 0;
@@ -20,27 +21,6 @@ const
 
 var
   IP: string;
-
-function ParseInternetProtocolAddress(const InputValue: string): string;
-var
-  Buffer: TStringList;
-  i: Integer;
-
-begin
-  Result := EmptyStr;
-  if IsValidInternetProtocolAddress(InputValue) then
-  begin
-    Buffer := TStringList.Create;
-    try
-      StringToStringList(InputValue, '.', Buffer);
-      for i := 0 to Buffer.Count - 1 do
-        Buffer[i] := IntToStr(StrToInt(Buffer[i]));
-      Result := StringListToString(Buffer, '.');
-    finally
-      Buffer.Free;
-    end;
-  end;
-end;
 
 function DoPing: Boolean;
 var

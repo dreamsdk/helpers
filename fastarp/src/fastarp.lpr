@@ -16,6 +16,11 @@ uses
   Version,
   InetUtil;
 
+type
+  EFastArp = class(Exception);
+  ENoInternetProtocolEntriesForAdapter = class(EFastArp);
+  ESubnetMismatch = class(EFastArp);
+
 const
   ERR_SUCCESS = 0;
   ERR_INVALID_PARAMS = 1;
@@ -29,17 +34,34 @@ var
   HostMediaAccessControlAddress,
   MediaAccessControlAddress,
   InternetProtocolAddress,
-  HostInternetProtocolAddress: string;
+  HostInternetProtocolAddress,
+  HostAdapterName: string;
   NetworkCardAdapterIndex: Integer;
   InputHostMediaAccessControlAddress,
   InputInternetProtocolAddress,
   InputMediaAccessControlAddress: string;
 
 function DoARP: Boolean;
+var
+  Executable,
+  Parameters: string;
+
 begin
-  Result := False;
   // ARP -s inet_addr eth_addr [if_addr]
-  //  netsh interface ip add neighbors "Ethernet" 192.168.10.1 00-D0-F1-02-8D-DF
+  Executable := 'arp';
+  Parameters := Format('-s %s %s %s', [InternetProtocolAddress,
+    MediaAccessControlAddress, HostInternetProtocolAddress]);
+
+  if (Win32MajorVersion >= 6) then // Vista or Windows 7+
+  begin
+    // netsh interface ip add neighbors "Ethernet" 192.168.10.1 00-D0-F1-02-8D-DF
+    Executable := 'netsh';
+    Parameters := Format('interface ip add neighbors "%s" %s %s', [
+      HostAdapterName, InternetProtocolAddress, MediaAccessControlAddress]);
+  end;
+
+  // Execute the command
+  Result := RunAndWait(Executable, Parameters);
 end;
 
 {$IFDEF DEBUG}
@@ -99,38 +121,32 @@ begin
       Format('"%s" is not a valid MAC Address', [AInputMediaAccessControlAddress]));
 end;
 
-function ExtractNetmask(const AIPv4Address: string): string;
+procedure RetrieveHostInternetProtocolAddress;
 var
-  i: Integer;
-
-begin
-  i := LastDelimiter('.', AIPv4Address);
-  Result := Copy(AIPv4Address, 0, i);
-end;
-
-function GetHostInternetProtocolAddress: string;
-var
-  CurrentNetMask: string;
   Addresses: TIpAddresses;
   i: Integer;
 
 begin
-  Result := EmptyStr;
+  HostInternetProtocolAddress := EmptyStr;
 
-  CurrentNetMask := ExtractNetmask(InternetProtocolAddress);
+  HostAdapterName := NetworkCardAdapters[NetworkCardAdapterIndex].NetworkCardName;
   Addresses := NetworkCardAdapters[NetworkCardAdapterIndex].IPv4Addresses;
 
   if Length(Addresses) = 0 then // no IPv4 address for this interface, can't do nothing
-    Exit;
+    raise ENoInternetProtocolEntriesForAdapter.Create('no IPv4 available');
 
-  Result := Addresses[0].Address; // first IPv4 in the list by default
-
-  // we'll try to find a better IPv4 entry if possible
+  // find the first IPv4 in the same subnet
   for i := Low(Addresses) to High(Addresses) do
   begin
-    if SameText(ExtractNetmask(Addresses[i].Address), CurrentNetMask) then
-      Result := Addresses[i].Address;
+    if IsSameSubnet(Addresses[i].Subnet, Addresses[i].Address, InternetProtocolAddress) then
+    begin
+      HostInternetProtocolAddress := Addresses[i].Address;
+      Break;
+    end;
   end;
+
+  if HostInternetProtocolAddress = EmptyStr then
+    raise ESubnetMismatch.Create('subnet mismatch');
 end;
 
 begin
@@ -192,15 +208,16 @@ begin
     Exit;
 
   // Check the range IP from the Host MAC address
-  HostInternetProtocolAddress := GetHostInternetProtocolAddress;
-  if HostInternetProtocolAddress = EmptyStr then
-  begin
-    SetExitError(ERR_INVALID_HOST_MAC,
-      Format('Host adapter "%s" can''t be used: no IPv4 address assigned', [InputHostMediaAccessControlAddress]));
-    Exit;
+  try
+    RetrieveHostInternetProtocolAddress;
+  except
+    on E:EFastArp do
+    begin
+      SetExitError(ERR_INVALID_HOST_MAC,
+        Format('Host adapter "%s" can''t be used: %s', [InputHostMediaAccessControlAddress, E.Message]));
+      Exit;
+    end;
   end;
-
-  WriteLn(HostInternetProtocolAddress);
 
   // Run the thing
   if not DoARP then

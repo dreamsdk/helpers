@@ -34,8 +34,8 @@ var
   HostMediaAccessControlAddress,
   MediaAccessControlAddress,
   InternetProtocolAddress,
-  HostInternetProtocolAddress,
-  HostAdapterName: string;
+  HostInternetProtocolAddress: string;
+  HostInterfaceIndex: Integer;
   NetworkCardAdapterIndex: Integer;
   InputHostMediaAccessControlAddress,
   InputInternetProtocolAddress,
@@ -56,11 +56,14 @@ begin
   begin
     // netsh interface ip add neighbors "Ethernet" 192.168.10.1 00-D0-F1-02-8D-DF
     Executable := 'netsh';
-    Parameters := Format('interface ip add neighbors "%s" %s %s', [
-      HostAdapterName, InternetProtocolAddress, MediaAccessControlAddress]);
+    Parameters := Format('interface ip add neighbors %d %s %s', [
+      HostInterfaceIndex, InternetProtocolAddress, MediaAccessControlAddress]);
   end;
 
   // Execute the command
+{$IFDEF DEBUG}
+  WriteLn('Executable: ', Executable, ', Parameters: ', Parameters);
+{$ENDIF}
   Result := RunAndWait(Executable, Parameters);
 end;
 
@@ -129,7 +132,7 @@ var
 begin
   HostInternetProtocolAddress := EmptyStr;
 
-  HostAdapterName := NetworkCardAdapters[NetworkCardAdapterIndex].NetworkCardName;
+  HostInterfaceIndex := NetworkCardAdapters[NetworkCardAdapterIndex].InterfaceIndex;
   Addresses := NetworkCardAdapters[NetworkCardAdapterIndex].IPv4Addresses;
 
   if Length(Addresses) = 0 then // no IPv4 address for this interface, can't do nothing

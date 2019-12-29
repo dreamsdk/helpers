@@ -52,7 +52,7 @@ begin
   Parameters := Format('-s %s %s %s', [InternetProtocolAddress,
     MediaAccessControlAddress, HostInternetProtocolAddress]);
 
-  if (Win32MajorVersion >= 6) then // Vista or Windows 7+
+  if IsWindowsVistaOrGreater then
   begin
     // netsh interface ip add neighbors "Ethernet" 192.168.10.1 00-D0-F1-02-8D-DF
     Executable := 'netsh';
@@ -102,6 +102,8 @@ procedure WriteHelp;
 begin
   WriteLn(
     GetFileDescription, ', Ver. ', GetFileVersion, sLineBreak, sLineBreak,
+    'Quickly add an ARP entry for the specified couple of <IPv4> and <MAC> addresses', sLineBreak,
+    'passing through the specified <Host_MAC>.', sLineBreak, sLineBreak,
     'Usage: ', ExtractFileNameOnly(ParamStr(0)), ' <Host_MAC> <IPv4> <MAC>', sLineBreak, sLineBreak,
     'Exit codes:', sLineBreak,
     '  ', ERR_SUCCESS, ': ARP entry successfully added for <MAC> to <IPv4> through <Host_MAC>', sLineBreak,
@@ -148,6 +150,7 @@ begin
     end;
   end;
 
+  // no IPv4 in the same subnet of InternetProtocolAddress
   if HostInternetProtocolAddress = EmptyStr then
     raise ESubnetMismatch.Create('subnet mismatch');
 end;
@@ -187,13 +190,13 @@ begin
   // Check Host MAC
   if not CheckMediaAccessControlAddress(HostMediaAccessControlAddress,
     InputHostMediaAccessControlAddress) then
-      Exit;
+      Exit; // ERR_INVALID_MAC
 
   // Check if the Host MAC exists
   NetworkCardAdapterIndex := FindMediaAccessControlAddress(NetworkCardAdapters, HostMediaAccessControlAddress);
   if NetworkCardAdapterIndex = -1 then
   begin
-    SetExitError(ERR_INVALID_IP,
+    SetExitError(ERR_INVALID_HOST_MAC,
       Format('"%s" is an unknown MAC Address on this system', [InputHostMediaAccessControlAddress]));
     Exit;
   end;
@@ -208,7 +211,7 @@ begin
 
   // Check Target MAC
   if not CheckMediaAccessControlAddress(MediaAccessControlAddress, InputMediaAccessControlAddress) then
-    Exit;
+    Exit; // ERR_INVALID_MAC
 
   // Check the range IP from the Host MAC address
   try

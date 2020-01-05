@@ -4,14 +4,15 @@ program PECheck;
 
 uses
   Windows,
-  SysUtils;
+  SysUtils,
+  FSTools;
 
 type
-  TPEBitness = (pebUnknown, peb16, peb32, peb64);
+  TPortableExecutableBitness = (pebUnknown, peb16, peb32, peb64);
 
 // Thanks ASerge
 // See: https://forum.lazarus.freepascal.org/index.php?topic=36834.0
-function GetPEBitness(const APath: WideString): TPEBitness;
+function GetPortableExecutableBitness(const APath: WideString): TPortableExecutableBitness;
 const
   IMAGE_NT_OPTIONAL_HDR32_MAGIC = $10b;
   IMAGE_NT_OPTIONAL_HDR64_MAGIC = $20b;
@@ -54,21 +55,24 @@ begin
 end;
 
 var
+  ProgramName: string;
   FileName: TFileName;
 
 {$R *.res}
 
 begin
+  Application.Title:='Portable Executable Checker';
+  ProgramName := GetProgramName;
   if ParamCount < 1 then
   begin
-    WriteLn('Usage: ', ExtractFileName(ChangeFileExt(ParamStr(0), '')), ' <filename>');
+    WriteLn('Usage: ', ProgramName, ' <FileName>');
     Exit;
   end;
 
   FileName := ParamStr(1);
   if FileExists(FileName) then
   begin
-    case GetPEBitness(WideString(FileName)) of
+    case GetPortableExecutableBitness(WideString(FileName)) of
       pebUnknown:
         begin
           WriteLn('Unknown');

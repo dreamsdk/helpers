@@ -10,7 +10,7 @@ uses
   PingSend,
   Laz_Synapse,
   LazFileUtils,
-  SysTools,
+  FSTools,
   Version,
   InetUtil;
 
@@ -20,6 +20,7 @@ const
   ERR_NO_IP_SUPPLIED = 2;
 
 var
+  ProgramName,
   IP: string;
 
 function DoPing: Boolean;
@@ -50,7 +51,8 @@ procedure WriteHelp;
 begin
   WriteLn(
     GetFileDescription, ', Ver. ', GetFileVersion, sLineBreak, sLineBreak,
-    'Usage: ', ExtractFileNameOnly(ParamStr(0)), ' <IPv4_Address>', sLineBreak, sLineBreak,
+    'Quickly check if the supplied IPv4 address is reachable or not.', sLineBreak, sLineBreak,
+    'Usage: ', ProgramName, ' <IPv4_Address>', sLineBreak, sLineBreak,
     'Exit codes:', sLineBreak,
     '  ', ERR_SUCCESS, ': IPv4 Address is reachable', sLineBreak,
     '  ', ERR_IP_NOT_REACHABLE, ': IPv4 Address is NOT reachable'
@@ -58,6 +60,7 @@ begin
 end;
 
 begin
+  ProgramName := GetProgramName;
   if ParamCount < 1 then
   begin
     WriteHelp;
@@ -68,7 +71,7 @@ begin
     IP := ParseInternetProtocolAddress(ParamStr(1));
     if IP = EmptyStr then
     begin
-      WriteLn('Error: "', ParamStr(1), '" is not a valid IPv4 Address');
+      WriteLn(ProgramName, ': fatal: "', ParamStr(1), '" is not a valid IPv4 Address');
       ExitCode := ERR_NO_IP_SUPPLIED;
     end
     else if (not DoPing) then

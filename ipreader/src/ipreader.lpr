@@ -8,6 +8,7 @@ uses
   SysUtils,
   Classes,
   LazFileUtils,
+  FSTools,
   Version;
 
 const
@@ -45,6 +46,8 @@ procedure WriteHelp;
 begin
   WriteLn(
     GetFileDescription, ', Ver. ', GetFileVersion, sLineBreak, sLineBreak,
+    'Extract a field from a Sega Dreamcast bootstrap file (usally called IP.BIN) and', sLineBreak,
+    'print it on-screen.', sLineBreak, sLineBreak,
     'Usage: ', ProgramName, ' <IP.BIN> <field>', sLineBreak,
     sLineBreak,
     'Fields may be one of the following:', sLineBreak,
@@ -74,6 +77,8 @@ var
   FileStream: TFileStream;
 
 begin
+  Result := Default(TInitialProgramMetadata);
+
   FileStream := TFileStream.Create(FileName, fmOpenRead);
   try
     FileStream.ReadBuffer(Result, SizeOf(TInitialProgramMetadata));
@@ -161,7 +166,7 @@ begin
 end;
 
 begin
-  ProgramName := ExtractFileNameOnly(ParamStr(0));
+  ProgramName := GetProgramName;
   ExitCode := ERR_SUCCESS;
   if ParamCount < 2 then
     WriteHelp

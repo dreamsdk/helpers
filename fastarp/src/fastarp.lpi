@@ -25,8 +25,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="122"/>
-      <StringTable Comments="http://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="FastARP for DreamSDK" InternalName="fastarp.exe" LegalCopyright="© Copyleft 2018-2020" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="fastarp.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2001"/>
+      <BuildNr Value="125"/>
+      <StringTable Comments="http://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="FastARP for DreamSDK" InternalName="fastarp.exe" LegalCopyright="© Copyleft 2018-2020" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="fastarp.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2002"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>
@@ -39,7 +39,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\..\common\src\sys"/>
+            <OtherUnitFiles Value="..\..\..\common\src\sys;..\..\..\common\src"/>
             <UnitOutputDirectory Value="..\lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -85,27 +85,12 @@
         <PackageName Value="LazUtils"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="1">
       <Unit0>
         <Filename Value="fastarp.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FastARP"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="..\..\common\src\sys\systools.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="SysTools"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="..\..\common\src\sys\version.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="Version"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\..\common\src\sys\inetutil.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="InetUtil"/>
-      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -116,7 +101,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\..\common\src\sys"/>
+      <OtherUnitFiles Value="..\..\..\common\src\sys;..\..\..\common\src"/>
       <UnitOutputDirectory Value="..\lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

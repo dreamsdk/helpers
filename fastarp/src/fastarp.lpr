@@ -12,10 +12,9 @@ uses
   Classes,
   LazFileUtils,
   SynaIP,
-  SysTools,
-  Version,
+  RunTools,
   InetUtil,
-  RunTools;
+  Version;
 
 type
   EFastArp = class(Exception);

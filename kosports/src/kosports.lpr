@@ -9,7 +9,8 @@ uses
   Classes,
   LazFileUtils,
   FSTools,
-  Version;
+  Version,
+  DCSDKMgr;
 
 const
   ERR_SUCCESS = 0;
@@ -18,9 +19,9 @@ const
   ERR_MULTIPLE_FIELDS_NOT_ALLOWED = 3;
 
 var
-  BootstrapMetadata: TInitialProgramMetadata;
-  ProgramName, BootstrapFileName: TFileName;
-  FieldName: string;
+  ProgramName: TFileName;
+  DreamcastSoftwareDevelopmentKitManager: TDreamcastSoftwareDevelopmentKitManager;
+  i: Integer;
 
 procedure WriteHelp;
 begin
@@ -52,16 +53,35 @@ begin
   );
 end;
 
+procedure WriteFatalError(const Message: string);
+begin
+  WriteLn(ProgramName, ': fatal: ', Message);
+end;
+
 begin
   ProgramName := GetProgramName;
   ExitCode := ERR_SUCCESS;
+
+  DreamcastSoftwareDevelopmentKitManager := TDreamcastSoftwareDevelopmentKitManager.Create(False);
+  try
+    DreamcastSoftwareDevelopmentKitManager.KallistiPorts.RetrieveAvailablePorts;
+
+    WriteLn(DreamcastSoftwareDevelopmentKitManager.KallistiPorts.CountVisibleInstalled, ' on ', DreamcastSoftwareDevelopmentKitManager.KallistiPorts.CountVisible);
+
+    for i := 0 to DreamcastSoftwareDevelopmentKitManager.KallistiPorts.Count - 1 do
+      WriteLn(DreamcastSoftwareDevelopmentKitManager.KallistiPorts[i].Name);
+
+  finally
+    DreamcastSoftwareDevelopmentKitManager.Free;
+  end;
+{
   if ParamCount < 2 then
     WriteHelp
   else
   begin
     if ParamCount > 2 then
     begin
-      WriteLn(ProgramName, ': fatal: multiple fields not allowed');
+
       ExitCode := ERR_MULTIPLE_FIELDS_NOT_ALLOWED;
     end
     else
@@ -84,5 +104,6 @@ begin
       end;
     end;
   end;
+}
 end.
 

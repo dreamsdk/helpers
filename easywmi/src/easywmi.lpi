@@ -11,22 +11,16 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="fastarp"/>
+      <Title Value="easywmi"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
-      <XPManifest>
-        <ExecutionLevel Value="requireAdministrator"/>
-        <TextName Value="DreamSDK.FastARP"/>
-        <TextDesc Value="FastARP for DreamSDK"/>
-      </XPManifest>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="174"/>
-      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="FastARP for DreamSDK" InternalName="fastarp.exe" LegalCopyright="© Copyleft 2018-2022" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="fastarp.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2106"/>
+      <BuildNr Value="8"/>
+      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="Simple WMI Utility for DreamSDK" InternalName="easywmi.exe" LegalCopyright="© Copyleft 2018-2022" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="easywmi.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2106"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>
@@ -35,11 +29,11 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\bin\fastarp"/>
+            <Filename Value="..\bin\easywmi"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\..\..\common\src\sys;..\..\..\common\src"/>
+            <OtherUnitFiles Value="..\..\..\common\src;..\..\..\manager\src\engine"/>
             <UnitOutputDirectory Value="..\lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -52,6 +46,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
           </Linking>
@@ -66,13 +61,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="00:50:56:2A:1F:16 192.168.002.004 DE-AD-BE-EF-00-00"/>
+        <CommandLineParams Value="status"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="00:50:56:2A:1F:16 192.168.002.004 DE-AD-BE-EF-00-00"/>
+            <CommandLineParams Value="status"/>
           </local>
         </Mode0>
       </Modes>
@@ -87,9 +82,9 @@
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
-        <Filename Value="fastarp.lpr"/>
+        <Filename Value="easywmi.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="FastARP"/>
+        <UnitName Value="EasyWMI"/>
       </Unit0>
     </Units>
   </ProjectOptions>
@@ -97,11 +92,11 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\bin\fastarp"/>
+      <Filename Value="..\bin\easywmi"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\..\common\src\sys;..\..\..\common\src"/>
+      <OtherUnitFiles Value="..\..\..\common\src;..\..\..\common\src\sys;..\..\..\manager\src\engine"/>
       <UnitOutputDirectory Value="..\lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

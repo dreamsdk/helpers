@@ -5,7 +5,7 @@ program FastARP;
 {$R *.res}
 
 // Define this to debug the GetNetworkCardAdapterList function
-// {$DEFINE PRINT_NETWORK_CARD_LIST}
+{$DEFINE PRINT_NETWORK_CARD_LIST}
 
 uses
   SysUtils,

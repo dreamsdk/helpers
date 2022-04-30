@@ -72,24 +72,28 @@ end;
 
 procedure WindowsManagementInstrumentation_NICCONFIG;
 var
-   WMIResult: TFPObjectList;
-   f, j: Integer;
+   WMIResult: TWindowsManagementInstrumentationResult;
+   f, j, k: Integer;
    Buffer: TStringList;
 
 begin
   WMIResult := GetWMIInfo('Win32_NetworkAdapterConfiguration', ['IPAddress', 'IPSubnet', 'MACAddress', 'SettingID']);
-  try
-    for f := 0 to Pred(WMIResult.Count) do
+//  try
+    for f := Low(WMIResult) to High(WMIResult) do
     begin
-      Buffer := TStringList(WMIResult[f]);
-      if Assigned(Buffer) then
+      WriteLn('Entry # ', f);
+      for k := Low(WMIResult[f]) to High(WMIResult[f]) do
       begin
-        WriteLn(Buffer.Text);
+        WriteLn('  ', WMIResult[f][k].Key, ' >>>');
+        for j := Low(WMIResult[f][k].Values) to High(WMIResult[f][k].Values) do
+          WriteLn('     ', WMIResult[f][k].Values[j]);
+        WriteLn('  ', WMIResult[f][k].Key, ' <<< ');
       end;
+      WriteLn('***');
     end;
-  finally
+{  finally
     WMIResult.Free;
-  end;
+  end;}
 end;
 
 begin

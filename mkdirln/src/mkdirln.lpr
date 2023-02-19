@@ -11,6 +11,10 @@ uses
   PEUtils,
   Junction;
 
+const
+  ERR_SUCCESS = 0;
+  ERR_FAILED = 1;
+
 var
   ProgramName: string;
   SourceFileName,
@@ -30,8 +34,14 @@ begin
   TargetFileName := ParamStr(2);
 
   if CreateJunction(SourceFileName, TargetFileName) then
-    WriteLn('Junction created.')
+  begin
+    WriteLn('Junction created.');
+    ExitCode := ERR_SUCCESS;
+  end
   else
+  begin
     WriteLn('Junction was NOT created.');
+    ExitCode := ERR_FAILED;
+  end;
 end.
 

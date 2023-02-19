@@ -19,8 +19,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="13"/>
-      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="Make Directory Link for DreamSDK" InternalName="makelink.exe" LegalCopyright="© Copyleft 2018-2023" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="makelink.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2302"/>
+      <BuildNr Value="15"/>
+      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="Make Directory Link for DreamSDK" InternalName="mkdirln.exe" LegalCopyright="© Copyleft 2018-2023" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="mkdirln.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2303"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>
@@ -29,7 +29,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\bin\makelink"/>
+            <Filename Value="..\bin\mkdirln"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -70,9 +70,8 @@
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
-        <Filename Value="makelink.lpr"/>
+        <Filename Value="mkdirln.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="MakeLink"/>
       </Unit0>
     </Units>
   </ProjectOptions>
@@ -80,7 +79,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\bin\makelink"/>
+      <Filename Value="..\bin\mkdirln"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

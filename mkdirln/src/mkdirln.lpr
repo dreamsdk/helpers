@@ -1,4 +1,4 @@
-program MakeLink;
+program MkDirLn;
 
 {$mode objfpc}{$H+}
 

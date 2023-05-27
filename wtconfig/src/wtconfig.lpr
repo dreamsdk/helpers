@@ -8,111 +8,96 @@ uses
   SysUtils,
   Classes,
   LazFileUtils,
+  FSTools,
   Version,
   WtTools;
 
 const
   ERR_SUCCESS = 0;
   ERR_INVALID_SWITCH = 1;
-
-type
-  TApplicationOperation = (aoUndefined, aoStatusAvailable, aoStatusInstalled, aoList);
+  ERR_WINDOWS_TERMINAL_NOT_INSTALLED = 2;
 
 var
   ProgramName: TFileName;
+  Operation: TWindowsTerminalSettingsOperation;
+  OperationStr: string;
 
 procedure WriteHelp;
 begin
   WriteLn(
     GetFileDescription, ', Ver. ', GetFileVersion, sLineBreak, sLineBreak,
-    'Manage KallistiOS Ports (KOS-Ports) libraries directly on command-line.', sLineBreak,
+    'Install or uninstall the DreamSDK profile for Windows Terminal.', sLineBreak,
+    'This installation/uninstallation applies only for the current user.', sLineBreak,
     sLineBreak,
-    'Usage: ', ProgramName, ' <command> [option]', sLineBreak,
+    'Usage: ', ProgramName, ' <command>', sLineBreak,
     sLineBreak,
     'Command may be one of the following:', sLineBreak,
-    '  list            : List all KOS-Ports libraries installed.', sLineBreak,
-    '  status [option] : Print KOS-Ports libraries count, where [option] is:', sLineBreak,
-    '                      installed: Print installed libraries count', sLineBreak,
-    '                      available: Print all libraries count', sLineBreak,
+    '  install   : Install the Windows Terminal DreamSDK profile.', sLineBreak,
+    '  uninstall : Uninstall the Windows Terminal DreamSDK profile.', sLineBreak,
     sLineBreak,
     'Exit codes:', sLineBreak,
     '  ', ERR_SUCCESS, ': Operation was successfully completed', sLineBreak,
-    '  ', ERR_INVALID_SWITCH, ': Invalid switch supplied'
+    '  ', ERR_INVALID_SWITCH, ': Invalid switch supplied', sLineBreak,
+    '  ', ERR_WINDOWS_TERMINAL_NOT_INSTALLED, ': Windows Terminal not installed/detected'
   );
 end;
 
-function GetApplicationOperation: TApplicationOperation;
+procedure SetExitError(ErrorCode: LongWord; const Message: string);
+begin
+  WriteLn('Error: ', Message);
+  ExitCode := ErrorCode;
+end;
+
+function GetApplicationOperation: TWindowsTerminalSettingsOperation;
 var
-  Command,
-  Option: string;
+  Command: string;
 
 begin
-  Result := aoUndefined;
+  Result := wtsoUndefined;
   if ParamCount > 0 then
   begin
     Command := LowerCase(ParamStr(1));
-    if Command = 'status' then
-    begin
-      if ParamCount > 1 then
-      begin
-        Option := LowerCase(ParamStr(2));
-        if Option = 'installed' then
-          Result := aoStatusInstalled
-        else if Option = 'available' then
-          Result := aoStatusAvailable;
-      end
-    end
-    else if Command = 'list' then
-      Result := aoList;
+    if Command = 'install' then
+      Result := wtsoInstall
+    else if Command = 'uninstall' then
+      Result := wtsoUninstall;
   end;
 end;
 
 begin
-  UpdateWindowsTerminalSettingsFile(wtsoUninstall);
-  (*ProgramName := GetProgramName;
+  ProgramName := GetProgramName;
   ExitCode := ERR_SUCCESS;
+  Operation := GetApplicationOperation;
 
-  DreamcastSoftwareDevelopmentKitManager :=
-    TDreamcastSoftwareDevelopmentKitManager.Create(False);
+  if Operation = wtsoUndefined then
+  begin
+    ExitCode := ERR_INVALID_SWITCH;
+    WriteHelp;
+    Exit;
+  end;
 
-  try
-    with DreamcastSoftwareDevelopmentKitManager do
-    begin
-      KallistiPorts.RetrieveAvailablePorts;
+  if not IsWindowsTerminalInstalled then
+  begin
+    SetExitError(ERR_WINDOWS_TERMINAL_NOT_INSTALLED,
+      'Windows Terminal has not been detected/is not installed.');
+    Exit;
+  end;
 
-      case GetApplicationOperation of
-        aoUndefined:
-          begin
-            ExitCode := ERR_INVALID_SWITCH;
-            WriteHelp;
-          end;
+  OperationStr := EmptyStr;
 
-        aoStatusAvailable:
-          WriteLn(KallistiPorts.CountVisible);
+  case Operation of
+    wtsoInstall:
+      OperationStr := 'Installation';
+    wtsoUninstall:
+      OperationStr := 'Uninstallation';
+  end;
 
-        aoStatusInstalled:
-          WriteLn(KallistiPorts.CountVisibleInstalled);
+  OperationStr := OperationStr + ' of Windows Terminal DreamSDK profile';
 
-        aoList:
-          begin
-            Separator := EmptyStr;
-            for i := 0 to KallistiPorts.Count - 1 do
-            begin
-              KallistiPort := KallistiPorts[i];
-              if not KallistiPort.Hidden then
-              begin
-                KallistiPortsInstalledFlag := BoolToStr(KallistiPort.Installed, '*', ' ');
-                WriteLn(Separator, '  [', KallistiPortsInstalledFlag, '] ', KallistiPort.Name, ' (', KallistiPort.Version, ')');
-                WriteLn('      ', KallistiPort.ShortDescription);
-                Separator := sLineBreak;
-              end;
-            end;
-          end;
-
-      end;
-    end;
-  finally
-    DreamcastSoftwareDevelopmentKitManager.Free;
-  end;*)
+  if UpdateWindowsTerminalSettingsFile(Operation) then
+    WriteLn(Format('%s done successfully.', [OperationStr]))
+  else
+    SetExitError(ERR_WINDOWS_TERMINAL_NOT_INSTALLED,
+      Format('%s failed.', [OperationStr]));
 end.
 

@@ -19,8 +19,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="17"/>
-      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="KallistiOS Ports Status Utility for DreamSDK" InternalName="wtconfig.exe" LegalCopyright="© Copyleft 2018-2022" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="wtconfig.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2212"/>
+      <BuildNr Value="19"/>
+      <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="Windows Terminal Configuration Tool for DreamSDK" InternalName="wtconfig.exe" LegalCopyright="© Copyleft 2018-2023" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="wtconfig.exe" ProductName="DreamSDK" ProductVersion="3.0.4.2306"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>

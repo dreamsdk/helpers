@@ -27,7 +27,7 @@ begin
   WriteLn(
     GetFileDescription, ', Ver. ', GetFileVersion, sLineBreak, sLineBreak,
     'Install or uninstall the DreamSDK profile for Windows Terminal.', sLineBreak,
-    'This installation/uninstallation applies only for the current user.', sLineBreak,
+    'This process applies to all users that have Windows Terminal installed.', sLineBreak,
     sLineBreak,
     'Usage: ', ProgramName, ' <command>', sLineBreak,
     sLineBreak,

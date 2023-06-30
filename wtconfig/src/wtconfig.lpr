@@ -94,7 +94,7 @@ begin
 
   OperationStr := OperationStr + ' of Windows Terminal DreamSDK profile';
 
-  if UpdateWindowsTerminalSettingsFile(Operation) then
+  if UpdateWindowsTerminalSettingsFiles(Operation) then
     WriteLn(Format('%s done successfully.', [OperationStr]))
   else
     SetExitError(ERR_WINDOWS_TERMINAL_NOT_INSTALLED,

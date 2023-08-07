@@ -17,10 +17,14 @@ const
   ERR_INVALID_SWITCH = 1;
   ERR_WINDOWS_TERMINAL_NOT_INSTALLED = 2;
 
+type
+  TApplicationOperation = (aoUndefined, aoInstall, aoUninstall);
+
 var
   ProgramName: TFileName;
-  Operation: TWindowsTerminalSettingsOperation;
+  Operation: TApplicationOperation;
   OperationStr: string;
+  Success: Boolean;
 
 procedure WriteHelp;
 begin
@@ -48,19 +52,19 @@ begin
   ExitCode := ErrorCode;
 end;
 
-function GetApplicationOperation: TWindowsTerminalSettingsOperation;
+function GetApplicationOperation: TApplicationOperation;
 var
   Command: string;
 
 begin
-  Result := wtsoUndefined;
+  Result := aoUndefined;
   if ParamCount > 0 then
   begin
     Command := LowerCase(ParamStr(1));
     if Command = 'install' then
-      Result := wtsoInstall
+      Result := aoInstall
     else if Command = 'uninstall' then
-      Result := wtsoUninstall;
+      Result := aoUninstall;
   end;
 end;
 
@@ -69,7 +73,7 @@ begin
   ExitCode := ERR_SUCCESS;
   Operation := GetApplicationOperation;
 
-  if Operation = wtsoUndefined then
+  if Operation = aoUndefined then
   begin
     ExitCode := ERR_INVALID_SWITCH;
     WriteHelp;
@@ -83,21 +87,26 @@ begin
     Exit;
   end;
 
+  Success := False;
   OperationStr := EmptyStr;
 
   case Operation of
-    wtsoInstall:
-      OperationStr := 'Installation';
-    wtsoUninstall:
-      OperationStr := 'Uninstallation';
+    aoInstall:
+      begin
+        OperationStr := 'Installation';
+        Success := InstallWindowsTerminalIntegration;
+      end;
+    aoUninstall:
+      begin
+        OperationStr := 'Uninstallation';
+        Success := UninstallWindowsTerminalIntegration;
+      end;
   end;
 
-  OperationStr := OperationStr + ' of Windows Terminal DreamSDK profile';
-
-  if UpdateWindowsTerminalSettingsFiles(Operation) then
-    WriteLn(Format('%s done successfully.', [OperationStr]))
+  if Success then
+    WriteLn(Format('%s of Windows Terminal DreamSDK profile done successfully.', [OperationStr]))
   else
     SetExitError(ERR_WINDOWS_TERMINAL_NOT_INSTALLED,
-      Format('%s failed.', [OperationStr]));
+      Format('%s of Windows Terminal DreamSDK profile failed.', [OperationStr]));
 end.
 

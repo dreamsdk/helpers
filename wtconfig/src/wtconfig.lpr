@@ -18,7 +18,7 @@ const
   ERR_WINDOWS_TERMINAL_NOT_INSTALLED = 2;
 
 type
-  TApplicationOperation = (aoUndefined, aoInstall, aoUninstall);
+  TApplicationOperation = (aoUndefined, aoStatus, aoInstall, aoUninstall);
 
 var
   ProgramName: TFileName;
@@ -36,6 +36,7 @@ begin
     'Usage: ', ProgramName, ' <command>', sLineBreak,
     sLineBreak,
     'Command may be one of the following:', sLineBreak,
+    '  status    : Indicates if Windows Terminal is installed or not.', sLineBreak,
     '  install   : Install the Windows Terminal DreamSDK profile.', sLineBreak,
     '  uninstall : Uninstall the Windows Terminal DreamSDK profile.', sLineBreak,
     sLineBreak,
@@ -47,8 +48,14 @@ begin
 end;
 
 procedure SetExitError(ErrorCode: LongWord; const Message: string);
+var
+  S: string;
+
 begin
-  WriteLn('Error: ', Message);
+  S := EmptyStr;
+  if (ErrorCode <> ERR_SUCCESS) then
+    S := 'Error: ';
+  WriteLn(S, Message);
   ExitCode := ErrorCode;
 end;
 
@@ -64,7 +71,9 @@ begin
     if Command = 'install' then
       Result := aoInstall
     else if Command = 'uninstall' then
-      Result := aoUninstall;
+      Result := aoUninstall
+    else if Command = 'status' then
+      Result := aoStatus;
   end;
 end;
 
@@ -84,6 +93,12 @@ begin
   begin
     SetExitError(ERR_WINDOWS_TERMINAL_NOT_INSTALLED,
       'Windows Terminal has not been detected/is not installed.');
+    Exit;
+  end
+  else if (Operation = aoStatus) then
+  begin
+    SetExitError(ERR_SUCCESS,
+      'Windows Terminal has been detected/is installed.');
     Exit;
   end;
 

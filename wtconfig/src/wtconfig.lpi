@@ -20,7 +20,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="22"/>
+      <BuildNr Value="23"/>
       <StringTable Comments="https://dreamsdk.org/" CompanyName="The DreamSDK Team" FileDescription="Windows Terminal Configuration Tool for DreamSDK" InternalName="wtconfig.exe" LegalCopyright="© Copyleft 2018-2025" LegalTrademarks="Sega and Dreamcast are registered trademark of Sega Games Co., Ltd." OriginalFilename="wtconfig.exe" ProductName="DreamSDK" ProductVersion="4.0.5.2501"/>
     </VersionInfo>
     <BuildModes Count="2">

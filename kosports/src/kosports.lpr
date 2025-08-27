@@ -13,12 +13,39 @@ uses
   DCSDKMgr,
   PortMgr;
 
+type
+  TApplicationOperation = (
+    aoUndefined,
+    aoStatusAvailable,
+    aoStatusInstalled,
+    aoList,
+    aoRefresh
+  );
+
+  TApplicationCommandMap = record
+    Name: string;
+    Operation: TApplicationOperation;
+  end;
+
+  TApplicationCommandMapArray = array of TApplicationCommandMap;
+
 const
+  // Exit codes
   ERR_SUCCESS = 0;
   ERR_INVALID_SWITCH = 1;
 
-type
-  TApplicationOperation = (aoUndefined, aoStatusAvailable, aoStatusInstalled, aoList);
+  // Command mappings
+  CommandMap: array[0..2] of TApplicationCommandMap = (
+    (Name: 'list';                  Operation: aoList),
+    (Name: 'status';                Operation: aoUndefined), // Not usable alone
+    (Name: 'refresh';               Operation: aoRefresh)
+  );
+
+  // Status option mappings
+  StatusOptionMap: array[0..1] of TApplicationCommandMap = (
+    (Name: 'installed';             Operation: aoStatusInstalled),
+    (Name: 'available';             Operation: aoStatusAvailable)
+  );
 
 var
   ProgramName: TFileName;
@@ -37,10 +64,11 @@ begin
     'Usage: ', ProgramName, ' <command> [option]', sLineBreak,
     sLineBreak,
     'Command may be one of the following:', sLineBreak,
-    '  list            : List all KOS-Ports libraries installed.', sLineBreak,
-    '  status [option] : Print KOS-Ports libraries count, where [option] is:', sLineBreak,
-    '                      installed: Print installed libraries count', sLineBreak,
-    '                      available: Print all libraries count', sLineBreak,
+    '  list              : List all KOS-Ports libraries installed.', sLineBreak,
+    '  status [option]   : Print various counts of KOS-Ports libraries, where [option] is:', sLineBreak,
+    '    installed       : Print count of installed libraries.', sLineBreak,
+    '    available       : Print count of all available libraries.', sLineBreak,
+    '  refresh           : Refresh cache used for the used Integrated Development Environment (IDE).', sLineBreak,
     sLineBreak,
     'Exit codes:', sLineBreak,
     '  ', ERR_SUCCESS, ': Operation was successfully completed', sLineBreak,
@@ -50,27 +78,50 @@ end;
 
 function GetApplicationOperation: TApplicationOperation;
 var
-  Command,
-  Option: string;
+  Command: string;
+  i: Integer;
+
+  function _GetSubOption(SuboptionMap: TApplicationCommandMapArray): TApplicationOperation;
+  var
+    j: Integer;
+    Option: string;
+
+  begin
+    Result := aoUndefined;
+    if ParamCount < 2 then
+      Exit;
+    Option := LowerCase(ParamStr(2));
+    for j := Low(SuboptionMap) to High(SuboptionMap) do
+    begin
+      if SuboptionMap[j].Name = Option then
+      begin
+        Result := SuboptionMap[j].Operation;
+        Exit;
+      end;
+    end;
+  end;
 
 begin
   Result := aoUndefined;
-  if ParamCount > 0 then
+  if ParamCount = 0 then
+    Exit;
+
+  Command := LowerCase(ParamStr(1));
+
+  // Search for command
+  for i := Low(CommandMap) to High(CommandMap) do
   begin
-    Command := LowerCase(ParamStr(1));
-    if Command = 'status' then
+    if CommandMap[i].Name = Command then
     begin
-      if ParamCount > 1 then
-      begin
-        Option := LowerCase(ParamStr(2));
-        if Option = 'installed' then
-          Result := aoStatusInstalled
-        else if Option = 'available' then
-          Result := aoStatusAvailable;
-      end
-    end
-    else if Command = 'list' then
-      Result := aoList;
+      // Regular case
+      Result := CommandMap[i].Operation;
+
+      // For 'status' command, we need an option
+      if Command = 'status' then
+        Result := _GetSubOption(StatusOptionMap);
+
+      Break;
+    end;
   end;
 end;
 
@@ -115,6 +166,12 @@ begin
             end;
           end;
 
+        // Handle IDE files
+        aoRefresh:
+          begin
+            WriteLn('KallistiOS Ports IDE Library Information cache has been refreshed.');
+            KallistiPorts.GenerateIntegratedDevelopmentEnvironmentLibraryInformation;
+          end;
       end;
     end;
   finally

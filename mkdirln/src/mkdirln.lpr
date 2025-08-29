@@ -28,7 +28,7 @@ var
 
 {$R *.res}
 
-function HandleExit(OperationResult: Boolean): Integer;
+function HandleNominalExit(OperationResult: Boolean): Integer;
 var
   OperationStr: string;
 
@@ -58,7 +58,7 @@ begin
     'Usage: ', ProgramName, ' <Operation> <TargetDirectory> [SourceDirectory]', sLineBreak,
     sLineBreak,
     'Operation:', sLineBreak,
-    '  create, c: Create junction from <SourceDirectory> to <TargetDirectory>', sLineBreak,
+    '  create, c: Create junction to <TargetDirectory> from <SourceDirectory>', sLineBreak,
     '  remove, r: Remove <TargetDirectory> junction', sLineBreak,
     sLineBreak,
     'Example:', sLineBreak,
@@ -113,14 +113,17 @@ begin
       ParamStr(PARAM_POSITION_SOURCE_DIRECTORY),
       pifsobExcludeTrailingPathDelimiter
     );
-    ExitCode := HandleExit(
+    ExitCode := HandleNominalExit(
       CreateJunction(SourceFileName, TargetFileName)
     );
   end
   else
     // Remove
-    ExitCode := HandleExit(
-      RemoveJunction(TargetFileName)
-    );
+    if IsJunction(TargetFileName) then
+      ExitCode := HandleNominalExit(
+        RemoveJunction(TargetFileName)
+      )
+    else
+      WriteLn('Junction does not exist -- Nothing to do.');
 end.
 
